@@ -1,0 +1,69 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+:where(.css-dev-only-do-not-override-qnu6hi).ant-menu-dark, :where(.css-dev-only-do-not-override-qnu6hi).ant-menu-dark>.ant-menu,:where(.css-dev-only-do-not-override-qnu6hi).ant-layout .ant-layout-sider,:where(.css-dev-only-do-not-override-qnu6hi).ant-layout-header
+,:where(.css-dev-only-do-not-override-qnu6hi).ant-menu-dark.ant-menu-inline .ant-menu-sub.ant-menu-inline, :where(.css-dev-only-do-not-override-qnu6hi).ant-menu-dark>.ant-menu.ant-menu-inline .ant-menu-sub.ant-menu-inline{
+background-color: #161e2d;
+}
+
+aside ul.ant-menu-root {
+  margin-top: 206px;
+}
+
+:where(.css-dev-only-do-not-override-qnu6hi).ant-menu-dark .ant-menu-item-selected, :where(.css-dev-only-do-not-override-qnu6hi).ant-menu-dark>.ant-menu .ant-menu-item-selected{
+  background-color: #ffffff14;
+}
+
+
+.demo-logo-text{
+  color: #f8994c;
+}
+
+.ant-form-item {
+  margin-bottom: 0;
+}
+
+table a {
+   color: #282c34;
+}
+
+.ant-card:not(:has(.ant-statistic)){
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+}

@@ -1,0 +1,47 @@
+@font-face {
+  font-family: 'Roboto';
+  src: url('./assets/fonts/Roboto-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('./assets/fonts/Inter-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Ubuntu';
+  src: url('./assets/fonts/Ubuntu-Bold.ttf') format('truetype');
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter','Ubuntu','Roboto';
+  /* font-family: 'Ubuntu','Roboto','Inter', sans-serif !important; */
+  font-weight: 500;
+  /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif; */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+aside span {
+  font-family:'Inter','Ubuntu','Roboto','Roboto',sans-serif  !important;
+  font-weight: bold;
+  font-size: 0.9rem;;
+  color: #fff;
+}
+
+div,span{
+  font-family: 'Inter','Ubuntu','Roboto',sans-serif  !important;
+}
+
+aside li svg{
+  color: #fff;
+  font-size: 1rem;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}

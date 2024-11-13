@@ -70,6 +70,11 @@ public class FlowableEngineConfiguration {
     }
 
     @Bean
+    public IdentityService identityService(ProcessEngine processEngine) {
+        return processEngine.getIdentityService();
+    }
+
+    @Bean
     public HistoryService historyService(ProcessEngine processEngine) {
         return processEngine.getHistoryService();
     }

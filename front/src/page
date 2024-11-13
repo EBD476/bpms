@@ -1,0 +1,43 @@
+  {/* <Row>
+      <Col xs={3}  md={3}>
+      <h1>insight app</h1>
+        <br></br>
+        <Button loading>Relad data</Button>
+
+        <FloatButton>
+           View data
+        </FloatButton>
+
+        <div style={{width: 256,}}>
+            <Button
+            type="primary"
+            onClick={toggleCollapsed}
+            style={{
+              marginBottom: 16,
+            }}
+          >
+            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          </Button>
+
+            <Menu
+              defaultSelectedKeys={['1']}
+              defaultOpenKeys={[    'sub1']}
+              mode="inline"               
+              inlineCollapsed={collapsed}
+              items={items}
+          />
+        </div>
+      </Col>
+      <Col xs={9}  md={9} >                
+          <Space
+            style={{
+              marginBottom: 16,
+            }}
+          >
+            <Button onClick={setAgeSort}>Sort age</Button>
+            <Button onClick={clearFilters}>Clear filters</Button>
+            <Button onClick={clearAll}>Clear filters and sorters</Button>
+          </Space>
+          <Table columns={columns} dataSource={data} onChange={handleChange} />
+      </Col>
+    </Row> */}

@@ -1,6 +1,8 @@
 package com.bpms.bpms.controller;
 
 import com.bpms.bpms.business.ProcessService;
+import com.bpms.bpms.dto.ProcessInstanceDetailsDto;
+import com.bpms.bpms.dto.ProcessInstanceDto;
 import com.bpms.bpms.dto.TaskDto;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,4 +59,29 @@ public class ProcessController {
     public List<TaskDto> getCompletedTasks() {
         return processService.getCompletedTasks();
     }
+
+    // Endpoint to get all completed tasks
+    @GetMapping("/totals")
+    public Map<String,Object> getTotals() {
+        return processService.getTotals();
+    }
+
+    // Endpoint to get all process instances
+    @GetMapping("/all-instances")
+    public List<ProcessInstance> getProcessInstances() {
+        return processService.getAllProcessInstances();
+    }
+
+    // Endpoint to get all running process instances
+    @GetMapping("/running-processes")
+    public List<ProcessInstanceDto> getAllRunningProcesses() {
+        return processService.getAllRunningProcessInstances();
+    }
+
+    // Endpoint to get process instance details by ID
+    @GetMapping("/{processInstanceId}/details")
+    public ProcessInstanceDetailsDto getProcessInstanceDetails(@PathVariable String processInstanceId) {
+        return processService.getProcessInstanceDetails(processInstanceId);
+    }
+
 }
