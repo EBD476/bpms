@@ -5,7 +5,10 @@ import com.bpms.bpms.dto.ProcessInstanceDetailsDto;
 import com.bpms.bpms.dto.ProcessInstanceDto;
 import com.bpms.bpms.dto.TaskDto;
 import org.flowable.engine.*;
+import org.flowable.engine.form.FormProperty;
+import org.flowable.engine.form.TaskFormData;
 import org.flowable.engine.history.HistoricActivityInstance;
+import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.history.HistoricTaskInstance;
 import org.flowable.engine.history.HistoricVariableInstance;
 import org.flowable.engine.repository.Deployment;
@@ -22,40 +25,43 @@ import java.util.stream.Collectors;
 @Service
 public class ProcessService {
 
-
     private final RuntimeService runtimeService;
     private final TaskService taskService;
     private final RepositoryService repositoryService;
     private final HistoryService historyService;
+    private final FormService formService;
     private final IdentityService identityService;
     private Deployment deployment;
 
-
-    public ProcessService(RuntimeService runtimeService, TaskService taskService, RepositoryService repositoryService, HistoryService historyService, IdentityService identityService) {
+    public ProcessService(RuntimeService runtimeService, TaskService taskService, RepositoryService repositoryService, HistoryService historyService, FormService formService, IdentityService identityService) {
         this.runtimeService = runtimeService;
         this.taskService = taskService;
         this.repositoryService = repositoryService;
         this.historyService = historyService;
+        this.formService = formService;
         this.identityService = identityService;
     }
 
+    //***********************************************************************************************************
     public void deployProcess() {
         // Deploy the process definition
-        InputStream bpmnStream = getClass().getClassLoader().getResourceAsStream("processes/simpleProcess.bpmn20.xml");
+        InputStream bpmnStream = getClass().getClassLoader().getResourceAsStream("processes/simpleFormProcess.bpmn20.xml");
         if (bpmnStream == null) {
             throw new RuntimeException("BPMN file not found");
         }
         deployment = repositoryService.createDeployment()
-                .addInputStream("create-task.bpmn20.xml", bpmnStream)
+                .addInputStream("simpleFormProcess-v2.bpmn20.xml", bpmnStream)
                 .deploy();
 
         System.out.println("Deployed process definition with id: " + deployment.getId());
     }
 
+    //***********************************************************************************************************
     public void startProcessInstance() {
-        runtimeService.startProcessInstanceByKey("simpleProcess");
+        runtimeService.startProcessInstanceByKey("simpleformProcess");
     }
 
+    //***********************************************************************************************************
     // Retrieve tasks for a specific process instance
     public List<TaskDto> getTasksForProcess(String processInstanceId) {
         List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstanceId).list();
@@ -64,15 +70,18 @@ public class ProcessService {
                 .collect(Collectors.toList());
     }
 
+    //***********************************************************************************************************
     public ProcessInstance startProcessWithKey(String processDefinitionKey, Map<String, Object> variables) {
         return runtimeService.startProcessInstanceByKey(processDefinitionKey, variables);
     }
 
+    //***********************************************************************************************************
     // Complete a task by ID
     public void completeTask(String taskId) {
         taskService.complete(taskId);
     }
 
+    //***********************************************************************************************************
     // Get all tasks in the system
     public List<TaskDto> getAllTasks() {
         List<Task> tasks = taskService.createTaskQuery().list(); // Retrieve all tasks
@@ -81,6 +90,7 @@ public class ProcessService {
                 .collect(Collectors.toList());
     }
 
+    //***********************************************************************************************************
     // Get all completed tasks
     public List<TaskDto> getCompletedTasks() {
         // Query for all tasks that are finished
@@ -98,25 +108,28 @@ public class ProcessService {
                 .map(task -> new TaskDto(task.getId(), task.getName(), task.getAssignee()))
                 .collect(Collectors.toList());
     }
-
+    //***********************************************************************************************************
     // Get all completed tasks
     public Map<String,Object> getTotals() {
-        // Query for all tasks that are finished
+//         Query for all tasks that are finished
 //        List<Task> tasks = taskService.createTaskQuery().finished().list();
-        long completedTasksCount = historyService
-                .createHistoricTaskInstanceQuery()
-                .finished()
-                .orderByTaskCreateTime()
-                .desc()
-                .count();
-
+        long completedTasksCount = getCompletedTasks().size();
+//        historyService
+//                .createHistoricTaskInstanceQuery()
+//                .finished()
+//                .orderByTaskCreateTime()
+//                .desc()
+//                .count();
         long  allTasksCount = taskService.createTaskQuery().count();
-
+        long allRunningProcessCount = getAllRunningProcessInstances().size();
+        long allProcessCount = getAllProcessInstances().size();
         long userCounts = identityService.createUserQuery().count(); // Retrieve all users
 
         Map<String,Object> data = new HashMap<>();
         data.put("allTasks",allTasksCount);
         data.put("completedTasksCount",completedTasksCount);
+        data.put("allRunningProcessCount",allRunningProcessCount);
+        data.put("allProcessCount",allProcessCount);
         data.put("totalUsers",userCounts);
 
         return data;
@@ -146,7 +159,6 @@ public class ProcessService {
     }
 
     //***********************************************************************************************************
-
     // Get detailed information about a specific process instance
     public ProcessInstanceDetailsDto getProcessInstanceDetails(String processInstanceId) {
         // Get process instance details
@@ -198,6 +210,47 @@ public class ProcessService {
                 activities
         );
 
+    }
+
+    //******************************* process service methods **************************************************
+    public  List<HistoricActivityInstanceDto> gellProcessInstanceByTaskId(String taskId) {
+
+        HistoricTaskInstance task = historyService.createHistoricTaskInstanceQuery()
+                .taskId(taskId)
+                .singleResult();
+
+        List<HistoricActivityInstanceDto> historicActivityInstance = historyService
+                .createHistoricActivityInstanceQuery()
+                .processInstanceId(task.getProcessInstanceId())
+                .list()
+                .stream()
+                .map(activity -> new HistoricActivityInstanceDto(
+                        activity.getActivityId(),
+                        activity.getActivityName(),
+                        activity.getActivityType(),
+                        activity.getAssignee(),
+                        activity.getStartTime(),
+                        activity.getEndTime()))
+                .collect(Collectors.toList());
+
+         return historicActivityInstance;
+    }
+
+    //***********************************************************************************************************
+    public List<Deployment> getAllDeployments(){
+        return repositoryService.createDeploymentQuery().list();
+    }
+
+    //***********************************************************************************************************
+    public List<FormProperty> getFormProperties(String taskId) {
+
+        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+        if (task != null) {
+            TaskFormData formData = formService.getTaskFormData(taskId);
+            return formData.getFormProperties();
+        } else {
+            throw new IllegalArgumentException("No task found for ID: " + taskId);
+        }
     }
 
 }

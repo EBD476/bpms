@@ -42,8 +42,6 @@ public class FlowableEngineConfiguration {
         return (ProcessEngineConfigurationImpl)processEngineConfiguration;
     }
 
-
-
     @Bean(name="processEngine")
     public ProcessEngine processEngine() {
         try {
@@ -77,5 +75,10 @@ public class FlowableEngineConfiguration {
     @Bean
     public HistoryService historyService(ProcessEngine processEngine) {
         return processEngine.getHistoryService();
+    }
+
+    @Bean
+    public FormService formService(ProcessEngine processEngine) {
+        return processEngine.getFormService();
     }
 }

@@ -1,9 +1,12 @@
 package com.bpms.bpms.controller;
 
 import com.bpms.bpms.business.ProcessService;
+import com.bpms.bpms.dto.HistoricActivityInstanceDto;
 import com.bpms.bpms.dto.ProcessInstanceDetailsDto;
 import com.bpms.bpms.dto.ProcessInstanceDto;
 import com.bpms.bpms.dto.TaskDto;
+import org.flowable.engine.form.FormProperty;
+import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +38,10 @@ public class ProcessController {
         return "Process started. ID: " + processInstance.getId();
     }
 
+    @GetMapping("/deployments")
+    public List<Deployment> getAllDeployments() {
+        return processService.getAllDeployments();
+    }
 
     // Endpoint to get tasks for a specific process instance
     @GetMapping("/tasks/{processInstanceId}")
@@ -83,5 +90,17 @@ public class ProcessController {
     public ProcessInstanceDetailsDto getProcessInstanceDetails(@PathVariable String processInstanceId) {
         return processService.getProcessInstanceDetails(processInstanceId);
     }
+
+    @GetMapping("/task/{taskId}")
+    public List<HistoricActivityInstanceDto> getProcessInstanceByTaskId(@PathVariable String taskId) {
+        return processService.gellProcessInstanceByTaskId(taskId);
+    }
+
+    @GetMapping("/task/form/{taskId}")
+    List<FormProperty> getFormProperties(@PathVariable String taskId){
+        return  processService.getFormProperties(taskId);
+    }
+
+
 
 }

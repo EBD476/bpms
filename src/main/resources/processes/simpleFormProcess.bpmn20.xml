@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:flowable="http://flowable.org/bpmn"
+             targetNamespace="http://www.flowable.org/bpmn">
+
+    <process id="simpleformProcess" name="Simple form Process">
+        <startEvent id="startEvent"/>
+        <sequenceFlow id="flow1" sourceRef="startEvent" targetRef="userTask"/>
+
+        <userTask id="userTask" name="Report Malware" flowable:assignee="kermit" flowable:formKey="malwareReportForm">
+            <extensionElements>
+<!--                <flowable:formData>-->
+<!--                    <flowable:formField id="firstName" label="First Name" type="string"/>-->
+<!--                    <flowable:formField id="lastName" label="Last Name" type="string"/>-->
+<!--                </flowable:formData>-->
+                <flowable:formProperty id="malwareName" name="Malware Name" type="string" required="true"/>
+                <flowable:formProperty id="malwareType" name="Malware Type" type="enum" required="true">
+                    <flowable:value id="virus">Virus</flowable:value>
+                    <flowable:value id="trojan">Trojan</flowable:value>
+                    <flowable:value id="ransomware">Ransomware</flowable:value>
+                    <flowable:value id="spyware">Spyware</flowable:value>
+                </flowable:formProperty>
+                <flowable:formProperty id="description" name="Description" type="string" required="false"/>
+<!--                <flowable:formProperty id="fileUpload" name="Upload File (if any)" type="file" required="false"/>-->
+            </extensionElements>
+        </userTask>
+
+        <sequenceFlow id="flow2" sourceRef="userTask" targetRef="endEvent"/>
+        <endEvent id="endEvent"/>
+    </process>
+</definitions>
