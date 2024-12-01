@@ -3,9 +3,19 @@ import { SmileOutlined,LoadingOutlined, CloseOutlined,MinusCircleOutlined,DownOu
 import { Button, Result , notification,Space ,Spin, Dropdown ,Form, Input, Card, Typography, Segmented, Table ,Tag, Row,Col,Switch,Drawer} from 'antd';
 import { AddRuleModal } from "./AddRuleModal";
 import { useParams } from 'react-router-dom';
-import ReactFlow, { Node, addEdge, Background, Edge, Connection, useNodesState, useEdgesState, MiniMap, Controls } from "reactflow";
-import "reactflow/dist/style.css";
-
+// import ReactFlow, { Node, addEdge, Background, Edge, Connection, useNodesState, useEdgesState, MiniMap, Controls } from "reactflow";
+// import "reactflow/dist/style.css";
+import {
+  ReactFlow,
+  Background,
+  Controls,
+  MiniMap,
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  Position,
+} from '@xyflow/react';
+import '@xyflow/react/dist/base.css';
 
 
 
@@ -150,6 +160,9 @@ const App: React.FC = (props) => {
     const [loading, setLoading] = React.useState(false);
     const [open, setOpen] = useState(false);
 
+    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
     const [data, setData] = useState([]); // State to hold the API response
     const { processId } = useParams(); // Get the id from the URL
 
@@ -161,26 +174,75 @@ const App: React.FC = (props) => {
       // customType: CustomNodeComponent
     };
 
-    
-    useEffect(() => {      
-    
-      const fetchData = async () => {                
+ useEffect(() => {
+    const getData = async () => {        
+        // const data = await fetch('https://jsonplaceholder.typicode.com/todos');
+
         try {
-          const response = await fetch(`http://localhost:9090/api/process/${processId}/details`, {
-            method: 'GET',            
-          });                          
-          const result = await response.json();
-          console.log(result)
-          setData(result);           
+            const response = await fetch('https://jsonplaceholder.typicode.com/todos', {
+              method: 'GET',            
+            });                          
+            const data = await response.json();
+            console.log(data)
+
+              // Map API data to nodes
+              const newNodes = data.map(todo => ({
+                id: todo.id.toString(),
+                data: { label: todo.title },
+                position: { x: Math.random() * 400, y: Math.random() * 400 },
+            }));
+
+            // Create edges between nodes (for demonstration)
+            const newEdges = newNodes.map((node, index) => {
+                if (index < newNodes.length - 1) {
+                    return {
+                        id: `e${node.id}-${newNodes[index + 1].id}`,
+                        source: node.id,
+                        target: newNodes[index + 1].id,
+                    };
+                }
+                return null;
+            }).filter(edge => edge !== null);
+
+            setNodes(newNodes);
+            setEdges(newEdges);
+        
+        // // Transform data into React Flow elements format
+        // const flowElements = data.map(todo => ({
+        //     id: todo.id.toString(),
+        //     data: { label: todo.title },
+        //     position: { x: Math.random() * 400, y: Math.random() * 400 },
+        //     style: { border: '1px solid #777', padding: '10px' }
+        // }));
+        // setElements(flowElements);        
+
         } catch (error) {
-          // setError(error.message); // Set error state if there is an error
-        } finally {
-          // setLoading(false); // Set loading to false after fetching data
         }
-      };
+
+    };
+
+    getData();
+}, []);
+    
+    // useEffect(() => {      
+    
+    //   const fetchData = async () => {                
+    //     try {
+    //       const response = await fetch(`http://localhost:9090/api/process/${processId}/details`, {
+    //         method: 'GET',            
+    //       });                          
+    //       const result = await response.json();
+    //       console.log(result)
+    //       setData(result);           
+    //     } catch (error) {
+    //       // setError(error.message); // Set error state if there is an error
+    //     } finally {
+    //       // setLoading(false); // Set loading to false after fetching data
+    //     }
+    //   };
   
-      fetchData(); // Call the fetch function
-    }, []);
+    //   fetchData(); // Call the fetch function
+    // }, []);
     
 
     const showDrawer = () => {
@@ -280,28 +342,36 @@ const App: React.FC = (props) => {
             <Col span={7}  offset={4}>
             <Card title="Card title" bordered={false} style={{ width: 600 }}>
                 <p>Card content</p>
-                <ReactFlow
-                    nodes={elements.nodes}
-                    edges={elements.edges}
-                    onConnect={onConnect}
-                    fitView
-                    onLoad={onLoad}
-                    nodeTypes={nodeTypes}
-                    zoomOnScroll={true}
-                    panOnScroll={true}
-                    elementsSelectable={true}
-                    selectNodesOnDrag={true}
-                    zoomOnDoubleClick={true}
-                    fitViewOptions={{
-                      padding: 0,
-                      minZoom: 1,
-                      maxZoom: 2,
-                    }}
+                // <ReactFlow
+                //     nodes={elements.nodes}
+                //     edges={elements.edges}
+                //     onConnect={onConnect}
+                //     fitView
+                //     onLoad={onLoad}
+                //     nodeTypes={nodeTypes}
+                //     zoomOnScroll={true}
+                //     panOnScroll={true}
+                //     elementsSelectable={true}
+                //     selectNodesOnDrag={true}
+                //     zoomOnDoubleClick={true}
+                //     fitViewOptions={{
+                //       padding: 0,
+                //       minZoom: 1,
+                //       maxZoom: 2,
+                //     }}
 
-                   >
-                   <Background color="#f0f0f0" />
-                </ReactFlow>
+                //    >
+                //    <Background color="#f0f0f0" />
+                // </ReactFlow>
 
+                 <ReactFlow
+                      nodes={nodes}
+                      edges={edges}                        
+                      fitView
+                      style={{ backgroundColor: "#F7F9FB" }} >
+               <MiniMap />
+               <Controls />
+               </ReactFlow>
 
               </Card>
             </Col>
